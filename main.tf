@@ -27,3 +27,14 @@ resource "aws_subnet" "private" {
   depends_on        = [var.vpc_info]
 
 }
+
+#create igw
+resource "aws_internet_gateway" "ntier" {
+  count  = length(var.public_subnet) > 0 ? 1 : 0
+  vpc_id = aws_vpc.ntier.id
+  tags = {
+    Name = "ntier-igw"
+  }
+
+
+}
