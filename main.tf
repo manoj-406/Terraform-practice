@@ -30,11 +30,53 @@ resource "aws_subnet" "private" {
 
 #create igw
 resource "aws_internet_gateway" "ntier" {
-  count  = length(local.do_we_have_public_subnets) > 0 ? 1 : 0
+  count  = local.do_we_have_public_subnets ? 1 : 0
   vpc_id = aws_vpc.ntier.id
   tags = {
     Name = "ntier-igw"
   }
-  depends_on = [ aws_vpc.ntier ]
+  depends_on = [aws_vpc.ntier]
+
+}
+
+#create public route table
+
+resource "aws_route_table" "public" {
+  count  = local.do_we_have_public_subnets ? 1 : 0
+  vpc_id = aws_vpc.ntier.id
+  tags = {
+    Name = "public-RT"
+  }
+  depends_on = [aws_vpc.ntier]
+}
+
+#add routetable associations for public
+
+resource "aws_route_table_association" "public" {
+  count          = length(var.public_subnet)
+  route_table_id = aws_route_table.public[0].id
+  subnet_id      = aws_subnet.public[count.index].id
+  depends_on     = [aws_route_table.public, aws_subnet.public]
+
+}
+
+#create private route table
+
+resource "aws_route_table" "private" {
+  count  = local.do_we_have_private_subnets ? 1 : 0
+  vpc_id = aws_vpc.ntier.id
+  tags = {
+    Name = "private-RT"
+  }
+  depends_on = [aws_vpc.ntier]
+}
+
+#add routetable associations for private
+
+resource "aws_route_table_association" "private" {
+  count          = length(var.private_subnet)
+  route_table_id = aws_route_table.private[0].id
+  subnet_id      = aws_subnet.private[count.index].id
+  depends_on     = [aws_route_table.private, aws_subnet.private]
 
 }
