@@ -24,3 +24,48 @@ variable "private_subnet" {
   }))
   description = "this is a private subnet"
 }
+
+variable "web_security_group" {
+  type = object({
+    name        = string
+    description = string
+    inbound_rules = list(object({
+      protocol    = string
+      port        = number
+      source      = string
+      description = string
+    }))
+
+  })
+
+}
+
+variable "app_security_group" {
+  type = object({
+    name        = string
+    description = string
+    inbound_rules = list(object({
+      protocol    = string
+      port        = number
+      source      = string
+      description = string
+    }))
+
+  })
+
+}
+
+variable "db_security_group" {
+  type = object({
+    name        = string
+    description = string
+    inbound_rules = list(object({
+      protocol    = string
+      port        = number
+      source      = string
+      description = string
+    }))
+
+  })
+
+}
