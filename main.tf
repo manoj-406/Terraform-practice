@@ -80,3 +80,12 @@ resource "aws_route_table_association" "private" {
   depends_on     = [aws_route_table.private, aws_subnet.private]
 
 }
+
+#create route between igw and public rote table
+
+resource "aws_route" "public" {
+  count                  = local.do_we_have_public_subnets ? 1 : 0
+  route_table_id         = aws_route_table.public[0].id
+  destination_cidr_block = local.anywhere
+  gateway_id             = aws_internet_gateway.ntier[0].id
+}
